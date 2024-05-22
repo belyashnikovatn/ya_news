@@ -12,15 +12,19 @@ class TestRoutes(TestCase):
     def setUpTestData(cls):
         cls.news = News.objects.create(title='Name', text='Text')
 
-    def test_home_page(self):
-        url = reverse('news:home')
-        # Вызываем метод get для клиента (self.client)
-        # и загружаем главную страницу.
-        response = self.client.get(url)
-        # Проверяем, что код ответа равен 200.
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+    def test_pages_availability(self):
+        urls = (
+            ('news:home', None),
+            ('news:detail', (self.news.id,)),
+            ('users:login', None),
+            ('users:logout', None),
+            ('users:signup', None),
+        )
+        for name, args in urls:
+            with self.subTest(name=name):
+                # Передаём имя и позиционный аргумент в reverse()
+                # и получаем адрес страницы для GET-запроса:
+                url = reverse(name, args=args)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, HTTPStatus.OK) 
 
-    def test_detail_page(self):
-        url = reverse('news:detail', kwargs={'pk': self.news.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
