@@ -9,13 +9,14 @@ from news.models import Comment, News
 
 User = get_user_model()
 
+
 class TestRoutes(TestCase):
 
     @classmethod
     def setUpTestData(cls):
         cls.news = News.objects.create(title='Name', text='Text')
         cls.author = User.objects.create(username='Leo')
-        cls.reader = User.objects.create(username='Jusr reader')
+        cls.reader = User.objects.create(username='Just reader')
         cls.comment = Comment.objects.create(
             news=cls.news,
             author=cls.author,
@@ -50,7 +51,7 @@ class TestRoutes(TestCase):
             self.client.force_login(user)
             # Для каждой пары "пользователь - ожидаемый ответ"
             # перебираем имена тестируемых страниц:
-            for name in ('news:edit', 'news:delete'):  
+            for name in ('news:edit', 'news:delete'):
                 with self.subTest(user=user, name=name):        
                     url = reverse(name, args=(self.comment.id,))
                     response = self.client.get(url)
