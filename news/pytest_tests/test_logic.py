@@ -60,7 +60,8 @@ def test_author_can_delete_note(author_client, form_data, news, comment):
 
 
 @pytest.mark.django_db
-def test_user_cant_edit_comment_of_another_user(reader_client, form_data, comment):
+def test_user_cant_edit_comment_of_another_user(reader_client, form_data,
+                                                comment):
     url = reverse('news:edit', args=(comment.pk,))
     response = reader_client.post(url, form_data)
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -69,7 +70,8 @@ def test_user_cant_edit_comment_of_another_user(reader_client, form_data, commen
 
 
 @pytest.mark.django_db
-def test_user_cant_delete_comment_of_another_user(reader_client, form_data, comment):
+def test_user_cant_delete_comment_of_another_user(reader_client, form_data,
+                                                  comment):
     comments_count = Comment.objects.count()
     url = reverse('news:delete', args=(comment.pk,))
     response = reader_client.post(url, form_data)
