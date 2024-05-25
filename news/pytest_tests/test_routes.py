@@ -23,6 +23,7 @@ def test_pages_availability(client, name, args):
     assert response.status_code == HTTPStatus.OK
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     'parametrized_client, expected_status',
     (

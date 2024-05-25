@@ -1,6 +1,10 @@
 import pytest
 
 from django.test.client import Client
+from django.conf import settings
+
+from datetime import datetime, timedelta
+from django.utils import timezone
 
 from news.models import News, Comment
 
@@ -56,3 +60,30 @@ def pk_for_args(news):
 @pytest.fixture
 def comment_pk_for_args(comment):
     return (comment.pk,)
+
+
+@pytest.fixture(autouse=True)
+def news_list():
+    today = datetime.today()
+    all_news = [
+        News(
+            title=f'News {index}',
+            text='Simple text',
+            date=today - timedelta(days=index)
+        )
+        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+    ]
+    News.objects.bulk_create(all_news)
+
+
+@pytest.fixture(autouse=True)
+def comments_list(news, author):
+    now = timezone.now()
+    for index in range(10):
+        comment = Comment.objects.create(
+            news=news,
+            author=author,
+            text=f'Text {index}'
+        )
+        comment.created = now + timedelta(days=index)
+        comment.save()
