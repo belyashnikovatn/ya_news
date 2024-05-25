@@ -87,3 +87,8 @@ def comments_list(news, author):
         )
         comment.created = now + timedelta(days=index)
         comment.save()
+
+
+@pytest.fixture
+def form_data():
+    return {'text': 'Comment text'}
