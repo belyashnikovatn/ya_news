@@ -20,13 +20,17 @@ def test_anonymous_user_cant_create_comment(news, client, form_data):
 
 
 @pytest.mark.django_db
-def test_user_can_create_comment(news, author_client, form_data):
+def test_user_can_create_comment(news, author, author_client, form_data):
     comments_count = Comment.objects.count()
     url = reverse('news:detail', args=(news.pk,))
     response = author_client.post(url, data=form_data)
     expected_url = f'{url}#comments'
     assertRedirects(response, expected_url)
     assert Comment.objects.count() == comments_count + 1
+    new_comment = Comment.objects.get(id=comments_count + 1)
+    assert new_comment.news == news
+    assert new_comment.author == author
+    assert new_comment.text == form_data['text']
 
 
 @pytest.mark.django_db
@@ -40,13 +44,15 @@ def test_user_cant_use_bad_words(news, author_client):
 
 
 @pytest.mark.django_db
-def test_author_can_edit_note(author_client, form_data, news, comment):
+def test_author_can_edit_note(author_client, author, form_data, news, comment):
     news_url = reverse('news:detail', args=(news.pk,))
     url = reverse('news:edit', args=(comment.pk,))
     response = author_client.post(url, form_data)
     assertRedirects(response, f'{news_url}#comments')
     comment.refresh_from_db()
     assert comment.text == form_data['text']
+    assert comment.author == author
+    assert comment.news == news
 
 
 @pytest.mark.django_db

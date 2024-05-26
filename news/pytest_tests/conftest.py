@@ -57,8 +57,18 @@ def pk_for_args(news):
 
 
 @pytest.fixture
+def pk_for_url(news):
+    return str(news.pk)
+
+
+@pytest.fixture
 def comment_pk_for_args(comment):
     return (comment.pk,)
+
+
+@pytest.fixture
+def comment_pk_for_url(comment):
+    return str(comment.pk)
 
 
 @pytest.fixture(autouse=True)
@@ -82,9 +92,9 @@ def comments_list(news, author):
         comment = Comment.objects.create(
             news=news,
             author=author,
-            text=f'Text {index}'
+            text=f'Text {index}',
+            created=now + timedelta(days=index)
         )
-        comment.created = now + timedelta(days=index)
         comment.save()
 
 
